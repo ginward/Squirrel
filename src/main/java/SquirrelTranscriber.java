@@ -1,5 +1,6 @@
 /**
- * Created by jinhuawang on 20/12/2016.
+ * Author: Jinhua Wang
+ * The script to transcribe audio into text
  * License MIT
  */
 import java.io.File;
@@ -12,7 +13,11 @@ import edu.cmu.sphinx.api.SpeechResult;
 import edu.cmu.sphinx.api.StreamSpeechRecognizer;
 
 public class SquirrelTranscriber {
-    public static void main(String[] args) throws IOException {
+    /*
+     * Function to transcribe audio into text
+     * */
+    public String transcribe(InputStream stream) throws IOException {
+
         Configuration configuration = new Configuration();
 
         configuration
@@ -24,13 +29,16 @@ public class SquirrelTranscriber {
 
         StreamSpeechRecognizer recognizer = new StreamSpeechRecognizer(
                 configuration);
-        InputStream stream = new FileInputStream(new File("/Users/jinhuawang/Squirrel/src/main/java/005 copy.wav"));
 
         recognizer.startRecognition(stream);
         SpeechResult result;
+        String txt = "";
         while ((result = recognizer.getResult()) != null) {
             System.out.format("Hypothesis: %s\n", result.getHypothesis());
+            txt=result.getHypothesis();
         }
         recognizer.stopRecognition();
+        return txt;
     }
+
 }
