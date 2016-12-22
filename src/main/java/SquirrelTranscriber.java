@@ -3,8 +3,6 @@
  * The script to transcribe audio into text
  * License MIT
  */
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,10 +27,11 @@ public class SquirrelTranscriber {
 
         StreamSpeechRecognizer recognizer = new StreamSpeechRecognizer(
                 configuration);
-
+        System.out.println("starting...");
         recognizer.startRecognition(stream);
         SpeechResult result;
         String txt = "";
+        System.out.println("ended...");
         while ((result = recognizer.getResult()) != null) {
             System.out.format("Hypothesis: %s\n", result.getHypothesis());
             txt=result.getHypothesis();

@@ -1,3 +1,4 @@
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,6 +21,9 @@ public class SquirrelServer {
         while (true){
             try {
                 socket = serverSocket.accept();
+                System.out.println(socket);
+                //start processing the socket
+                new SquirrelThread(socket).start();
             } catch (IOException e){
                 System.out.println("I/O error: "+e);
             }
