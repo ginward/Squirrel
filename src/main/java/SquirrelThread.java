@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static java.lang.System.out;
 
@@ -10,6 +11,7 @@ import static java.lang.System.out;
  * Dec. 20, 2016
  */
 
+@SuppressWarnings("Since15")
 public class SquirrelThread extends Thread {
 
     protected Socket socket;
@@ -20,9 +22,6 @@ public class SquirrelThread extends Thread {
 
     //run the thread
     public void run(){
-        InputStream in = null;
-        BufferedReader reader = null;
-        DataOutputStream out = null;
         try {
             request();
         } catch (IOException e){
@@ -36,17 +35,17 @@ public class SquirrelThread extends Thread {
         //start to read request
         String line;
         line = in.readLine();
-        boolean isPost = line.startsWith("POST");
-        if(line.startsWith("POST")){
-            handle_post_request(in, line);
-        } else if(line.startsWith("OPTION")){
-            handle_option_request(in, line);
+        if(line!=null) {
+            if (line.startsWith("POST")) {
+                handle_post_request(in, line);
+            } else if (line.startsWith("OPTION")) {
+                handle_option_request(in, line);
+            } else {
+                //todo:tell the browser that the resource does not exist
+            }
         } else {
-            //tell the browser that the resource does not exist
-
+            System.out.print("ERROR: LINE EMPTY");
         }
-
-
     }
 
     //for browsers making cross domain requests, an option request will be first sent
@@ -63,6 +62,7 @@ public class SquirrelThread extends Thread {
         out.write("\r\n");
         out.flush();
         out.close();
+        in.close();
         socket.close();
     }
 
@@ -83,15 +83,41 @@ public class SquirrelThread extends Thread {
         for (int i = 0; i < contentLength; i++) {
             c = in.read();
             body.append((char) c);
-            System.out.println(c);
         }
-        raw.append(body.toString());
-        System.out.print(body.toString());
+        //convert the input to stream
+        //InputStream inputStream = new ByteArrayInputStream(String.valueOf(body).getBytes());
+        FileOutputStream fos = new FileOutputStream("/Users/jinhuawang/Desktop/test.wav");
+        byte[] decoded = Base64.getDecoder().decode(body.toString());
+        fos.write(decoded);
+        fos.close();
+        SquirrelTranscriber transcriber = new SquirrelTranscriber();
+        //String text = transcriber.transcribe(inputStream);
+        in.close();
+        //response(text);
     }
 
     //send the http response back to the client
     public void response(String text) throws IOException {
+        System.out.println(text);
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        out.write("HTTP/1.0 200 OK\r\n");
+        out.write(getServerTime()+"\r\n");
+        out.write("Server: JAVA\r\n");
+        out.write("Content-Type: text/html\r\n");
+        out.write("Content-Length:"+text.length()+"\r\n");
+        out.write("\r\n");
+        out.write(text);
+        out.close();
+        socket.close();
+    }
 
+    //get the time of the server for HTTP response
+    String getServerTime() {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return dateFormat.format(calendar.getTime());
     }
 
 }
