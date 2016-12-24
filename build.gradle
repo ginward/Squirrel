@@ -13,4 +13,5 @@ repositories {
 dependencies {
     compile group: 'edu.cmu.sphinx', name: 'sphinx4-core', version:'5prealpha-SNAPSHOT'
     compile group: 'edu.cmu.sphinx', name: 'sphinx4-data', version:'5prealpha-SNAPSHOT'
+    compile 'org.apache.directory.studio:org.apache.commons.io:2.4'
 }

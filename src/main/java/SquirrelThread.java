@@ -1,10 +1,10 @@
+import org.apache.commons.io.IOUtils;
+
+import javax.sound.sampled.*;
 import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import static java.lang.System.out;
-
 /**
  * The thread to handle upcoming socket connections and transcribe audio into text
  * Author: Jinhua Wang
@@ -25,12 +25,15 @@ public class SquirrelThread extends Thread {
         try {
             request();
         } catch (IOException e){
+            e.printStackTrace();
             return;
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
         }
     }
 
     //parse the http request from the client
-    public void request() throws IOException {
+    public void request() throws IOException, UnsupportedAudioFileException {
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         //start to read request
         String line;
@@ -66,7 +69,7 @@ public class SquirrelThread extends Thread {
         socket.close();
     }
 
-    public void handle_post_request(BufferedReader in, String line) throws IOException {
+    public void handle_post_request(BufferedReader in, String line) throws IOException, UnsupportedAudioFileException {
         StringBuilder raw = new StringBuilder();
         raw.append("" + line);
         int contentLength = 0;
@@ -85,15 +88,17 @@ public class SquirrelThread extends Thread {
             c = in.read();
             body.append((char) c);
         }
-        //convert the input to stream
-        //InputStream inputStream = new ByteArrayInputStream(String.valueOf(body).getBytes());
+        InputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(body.toString()));
+        //save the audio file to server
         FileOutputStream fos = new FileOutputStream("/Users/jinhuawang/Desktop/test.wav");
-        byte[] decoded = Base64.getDecoder().decode(body.toString());
-        fos.write(decoded);
+        IOUtils.copy(inputStream, fos);
         fos.close();
-        SquirrelTranscriber transcriber = new SquirrelTranscriber();
+        //convert the input to stream
+        //InputStream inputStream = new FileInputStream(new File("/Users/jinhuawang/Desktop/test3.wav"));
+        //SquirrelTranscriber transcriber = new SquirrelTranscriber();
         //String text = transcriber.transcribe(inputStream);
-        in.close();
+        //in.close();
+        //inputStream.close();
         //response(text);
     }
 
