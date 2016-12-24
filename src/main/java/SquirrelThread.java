@@ -80,6 +80,7 @@ public class SquirrelThread extends Thread {
         }
         StringBuilder body = new StringBuilder();
         int c = 0;
+        //skip the header of the file data:audio/wav;base64,
         for (int i = 0; i < contentLength; i++) {
             c = in.read();
             body.append((char) c);
