@@ -47,6 +47,3 @@ def downsampleWav(src, dst, inrate=44100, outrate=16000, inchannels=1, outchanne
         return False
 
     return True 
-
-
-downsampleWav("/Users/jinhuawang/Desktop/test2.wav", "/Users/jinhuawang/Desktop/test3.wav", 44100, 16000, 1, 1)
