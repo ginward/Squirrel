@@ -1,7 +1,9 @@
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.StringBuilderWriter;
 
 import javax.sound.sampled.*;
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -15,6 +17,10 @@ import java.util.*;
 public class SquirrelThread extends Thread {
 
     protected Socket socket;
+
+    public static final String HOST_NAME = "localhost";
+
+    public static final int PORT = 8081;
 
     public SquirrelThread (Socket clientSocket){
         this.socket = clientSocket;
@@ -83,23 +89,25 @@ public class SquirrelThread extends Thread {
         }
         StringBuilder body = new StringBuilder();
         int c = 0;
-        //skip the header of the file data:audio/wav;base64,
         for (int i = 0; i < contentLength; i++) {
             c = in.read();
             body.append((char) c);
         }
-        InputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(body.toString()));
+
+        String converted_str = convert_service(body.toString());
+        InputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(converted_str));
         //save the audio file to server
         FileOutputStream fos = new FileOutputStream("/Users/jinhuawang/Desktop/test.wav");
         IOUtils.copy(inputStream, fos);
         fos.close();
+        /*
         //convert the input to stream
         //InputStream inputStream = new FileInputStream(new File("/Users/jinhuawang/Desktop/test3.wav"));
-        //SquirrelTranscriber transcriber = new SquirrelTranscriber();
-        //String text = transcriber.transcribe(inputStream);
-        //in.close();
-        //inputStream.close();
-        //response(text);
+        SquirrelTranscriber transcriber = new SquirrelTranscriber();
+        String text = transcriber.transcribe(inputStream);
+        in.close();
+        response(text);
+        */
     }
 
     //send the http response back to the client
@@ -124,6 +132,37 @@ public class SquirrelThread extends Thread {
                 "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         return dateFormat.format(calendar.getTime());
+    }
+
+    //the service to convert the audio file with python script
+    //@return base64 string
+    public String convert_service(String base64_str) throws IOException {
+        String result = "";
+        InetAddress address = InetAddress.getByName(HOST_NAME);
+        socket = new Socket(address, PORT);
+        OutputStream os = socket.getOutputStream();
+        InputStream is = socket.getInputStream();
+        String str_to_send = "SEND\n\r"+base64_str.length()+"\n\r"+"44100\n\r"+"1\n\r"+base64_str;
+        os.write(str_to_send.getBytes());
+        os.flush();
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        String cmd = br.readLine();
+        if (cmd=="RECV"){
+            System.out.println("Begin receiving data ...");
+            int contentSize = Integer.parseInt(br.readLine());
+            StringBuilder sb = new StringBuilder();
+            int c = 0;
+            for (int i = 0; i < contentSize; i++) {
+                c = br.read();
+                sb.append((char) c);
+            }
+            return sb.toString();
+        } else {
+            System.out.println("Command Not Found: "+cmd);
+        }
+        os.close();
+        return result;
     }
 
 }

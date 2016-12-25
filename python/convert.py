@@ -7,12 +7,6 @@ import sys
 import os
 
 def downsampleWav(src, dst, inrate=44100, outrate=16000, inchannels=1, outchannels=1):
-    if not os.path.exists(src):
-        print 'Source not found!'
-        return False
-
-    if not os.path.exists(os.path.dirname(dst)):
-        os.makedirs(os.path.dirname(dst))
 
     try:
         s_read = wave.open(src, 'r')
