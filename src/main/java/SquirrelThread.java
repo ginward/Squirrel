@@ -96,18 +96,13 @@ public class SquirrelThread extends Thread {
 
         String converted_str = convert_service(body.toString());
         InputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(converted_str));
-        //save the audio file to server
-        FileOutputStream fos = new FileOutputStream("/Users/jinhuawang/Desktop/test.wav");
-        IOUtils.copy(inputStream, fos);
-        fos.close();
-        /*
         //convert the input to stream
         //InputStream inputStream = new FileInputStream(new File("/Users/jinhuawang/Desktop/test3.wav"));
         SquirrelTranscriber transcriber = new SquirrelTranscriber();
         String text = transcriber.transcribe(inputStream);
         in.close();
         response(text);
-        */
+
     }
 
     //send the http response back to the client
@@ -148,7 +143,7 @@ public class SquirrelThread extends Thread {
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         String cmd = br.readLine();
-        if (cmd=="RECV"){
+        if (new String(cmd).equals("RECV")){
             System.out.println("Begin receiving data ...");
             int contentSize = Integer.parseInt(br.readLine());
             StringBuilder sb = new StringBuilder();

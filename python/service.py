@@ -9,19 +9,19 @@ License: MIT
 Squirrel Protocol: 
 
 client (JAVA) send the file to server(python) for conversion (BASE64 Encoding)
-SEND\n\r 
-LENGTH\n\r
-IN SAMPLE RATE\n\r
-IN NUM CHNNELS\n\r
+SEND\n
+LENGTH\n
+IN SAMPLE RATE\n
+IN NUM CHNNELS\n
 [DATA]
 
 server (python) send the converted file back to client (JAVA) (BASE64 Encoding)
-RECV\n\r
-LENGTH\n\r
+RECV\n
+LENGTH\n
 [DATA]
 
 close socket
-END\n\r
+END\n
 '''
 
 #the module to downsample wav file
@@ -45,7 +45,7 @@ def on_new_client(socket):
 	print "new client" + str(socket)
 	while True:
 		msg = buffered_reader(socket)
-		cmd = msg[:msg.find('\n\r')]
+		cmd = msg[:msg.find('\n')]
 		if cmd == 'END':
 			#terminate the socket
 			socket.close()
@@ -53,7 +53,7 @@ def on_new_client(socket):
 			break
 		if cmd == "SEND":
 			#start converting the file received from the socket
-			data = msg.split('\n\r',5)
+			data = msg.split('\n',5)
 			inrate = data[2] if data[2] is not None else 44100
 			numChannels = data[3] if data[3] is not None else 1
 			#decode the base64 data 
@@ -64,7 +64,7 @@ def on_new_client(socket):
  			convert.downsampleWav(data_decoded, data_output, int(inrate), 16000, int(numChannels), 1)
  			data_output.seek(0) #reset the buffer head
  			encoded_string = base64.b64encode(data_output.read())
- 			msg_send = "RECV\n\r" + str(len(encoded_string))+ "\n\r" +encoded_string
+ 			msg_send = "RECV\n" + str(len(encoded_string))+ "\n" +encoded_string
  			socket.send(msg_send)
 
 #the buffered reader to read data from the socket
