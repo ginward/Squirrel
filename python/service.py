@@ -44,8 +44,7 @@ print "listenting on " + str(CONST_HOST) + ":" + str(CONST_PORT)
 def on_new_client(socket):
 	print "new client" + str(socket)
 	while True:
-		msg = buffered_reader(socket)
-		cmd = msg[:msg.find('\n')]
+		cmd = buffered_readLine(socket)
 		if cmd == 'END':
 			#terminate the socket
 			socket.close()
@@ -53,11 +52,15 @@ def on_new_client(socket):
 			break
 		if cmd == "SEND":
 			#start converting the file received from the socket
-			data = msg.split('\n',5)
-			inrate = data[2] if data[2] is not None else 44100
-			numChannels = data[3] if data[3] is not None else 1
+			length = int(buffered_readLine(socket))
+			inrate = int(buffered_readLine(socket))
+			if inrate is None:
+				inrate = 44100
+			numChannels = int(buffered_readLine(socket))
+			if numChannels is None:
+				numChannels = 1
 			#decode the base64 data 
- 			data_decoded = StringIO.StringIO(base64.b64decode(data[4]))
+ 			data_decoded = StringIO.StringIO(decode_base64(buffered_readLine(socket)))
  			data_decoded.seek(0)
  			data_output = StringIO.StringIO()
  			#starts the conversion process
@@ -67,15 +70,29 @@ def on_new_client(socket):
  			msg_send = "RECV\n" + str(len(encoded_string))+ "\n" +encoded_string
  			socket.send(msg_send)
 
-#the buffered reader to read data from the socket
-def buffered_reader(socket):
-	data = ""
+#read one line from the socket
+def buffered_readLine(socket):
+	line = ""
 	while True:
-		part = socket.recv(4096)
-		data+=part
-		if len(part)<4096:
-			break;
-	return data;
+		part = socket.recv(1)
+		if part != "\n":
+			line+=part
+		elif part == "\n":
+			break
+	return line
+
+def decode_base64(data):
+    """Decode base64, padding being optional.
+
+    :param data: Base64 data as an ASCII byte string
+    :returns: The decoded byte string.
+    """
+    print len(data)
+    missing_padding = len(data) % 4
+    print missing_padding
+    if missing_padding != 0:
+        data += b'='* (4 - missing_padding)
+    return base64.b64decode(data)
 
 #accept connections from clients
 while True:

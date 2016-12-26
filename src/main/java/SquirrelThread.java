@@ -95,7 +95,6 @@ public class SquirrelThread extends Thread {
         String converted_str = convert_service(body.toString());
         InputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(converted_str));
         //convert the input to stream
-        //InputStream inputStream = new FileInputStream(new File("/Users/jinhuawang/Desktop/test3.wav"));
         SquirrelTranscriber transcriber = new SquirrelTranscriber();
         String text = transcriber.transcribe(inputStream);
         response(text);
@@ -136,7 +135,7 @@ public class SquirrelThread extends Thread {
         Socket service_socket = new Socket(address, PORT);
         OutputStream os = service_socket.getOutputStream();
         InputStream is = service_socket.getInputStream();
-        String str_to_send = "SEND\n\r"+base64_str.length()+"\n\r"+"44100\n\r"+"1\n\r"+base64_str;
+        String str_to_send = "SEND\n"+base64_str.length()+"\n"+"44100\n"+"1\n"+base64_str + "\n";
         os.write(str_to_send.getBytes());
         os.flush();
         InputStreamReader isr = new InputStreamReader(is);
