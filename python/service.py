@@ -49,7 +49,7 @@ def on_new_client(socket):
 		if cmd == 'END':
 			#terminate the socket
 			socket.close()
-			print "terminated:"+socket
+			print "terminated:"+str(socket)
 			break
 		if cmd == "SEND":
 			#start converting the file received from the socket

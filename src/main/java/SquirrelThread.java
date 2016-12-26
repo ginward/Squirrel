@@ -71,11 +71,10 @@ public class SquirrelThread extends Thread {
         out.write("\r\n");
         out.flush();
         out.close();
-        in.close();
-        socket.close();
     }
 
     public void handle_post_request(BufferedReader in, String line) throws IOException, UnsupportedAudioFileException {
+
         StringBuilder raw = new StringBuilder();
         raw.append("" + line);
         int contentLength = 0;
@@ -93,16 +92,13 @@ public class SquirrelThread extends Thread {
             c = in.read();
             body.append((char) c);
         }
-
         String converted_str = convert_service(body.toString());
         InputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(converted_str));
         //convert the input to stream
         //InputStream inputStream = new FileInputStream(new File("/Users/jinhuawang/Desktop/test3.wav"));
         SquirrelTranscriber transcriber = new SquirrelTranscriber();
         String text = transcriber.transcribe(inputStream);
-        in.close();
         response(text);
-
     }
 
     //send the http response back to the client
@@ -113,11 +109,14 @@ public class SquirrelThread extends Thread {
         out.write(getServerTime()+"\r\n");
         out.write("Server: JAVA\r\n");
         out.write("Content-Type: text/html\r\n");
+        out.write("Access-Control-Allow-Origin: *\r\n");
+        out.write("Access-Control-Allow-Headers: accept, content-type\r\n");
+        out.write("Access-Control-Allow-Methods: POST\r\n");
         out.write("Content-Length:"+text.length()+"\r\n");
         out.write("\r\n");
         out.write(text);
+        out.flush();
         out.close();
-        socket.close();
     }
 
     //get the time of the server for HTTP response
@@ -134,9 +133,9 @@ public class SquirrelThread extends Thread {
     public String convert_service(String base64_str) throws IOException {
         String result = "";
         InetAddress address = InetAddress.getByName(HOST_NAME);
-        socket = new Socket(address, PORT);
-        OutputStream os = socket.getOutputStream();
-        InputStream is = socket.getInputStream();
+        Socket service_socket = new Socket(address, PORT);
+        OutputStream os = service_socket.getOutputStream();
+        InputStream is = service_socket.getInputStream();
         String str_to_send = "SEND\n\r"+base64_str.length()+"\n\r"+"44100\n\r"+"1\n\r"+base64_str;
         os.write(str_to_send.getBytes());
         os.flush();
@@ -152,6 +151,9 @@ public class SquirrelThread extends Thread {
                 c = br.read();
                 sb.append((char) c);
             }
+            String goodbye = "END\n";
+            os.write(goodbye.getBytes());
+            os.flush();
             return sb.toString();
         } else {
             System.out.println("Command Not Found: "+cmd);
