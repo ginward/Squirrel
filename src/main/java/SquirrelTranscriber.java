@@ -24,7 +24,7 @@ public class SquirrelTranscriber {
                 .setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
         configuration
                 .setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
-
+        configuration.setSampleRate(8000);
         StreamSpeechRecognizer recognizer = new StreamSpeechRecognizer(
                 configuration);
         System.out.println("starting...");
@@ -34,7 +34,8 @@ public class SquirrelTranscriber {
         System.out.println("ended...");
         while ((result = recognizer.getResult()) != null) {
             System.out.format("Hypothesis: %s\n", result.getHypothesis());
-            txt=result.getHypothesis();
+            txt+=result.getHypothesis();
+            txt+=" ";
         }
         recognizer.stopRecognition();
         return txt;

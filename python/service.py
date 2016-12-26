@@ -61,7 +61,7 @@ def on_new_client(socket):
  			data_decoded.seek(0)
  			data_output = StringIO.StringIO()
  			#starts the conversion process
- 			convert.downsampleWav(data_decoded, data_output, int(inrate), 16000, int(numChannels), 1)
+ 			convert.downsampleWav(data_decoded, data_output, int(inrate), 8000, int(numChannels), 1)
  			data_output.seek(0) #reset the buffer head
  			encoded_string = base64.b64encode(data_output.read())
  			msg_send = "RECV\n" + str(len(encoded_string))+ "\n" +encoded_string
