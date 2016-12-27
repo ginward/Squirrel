@@ -1,4 +1,4 @@
-import java.io.DataOutputStream;
+import javax.net.ssl.SSLServerSocketFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,8 +13,11 @@ public class SquirrelServer {
     public static void main(String[] args) {
         ServerSocket serverSocket = null;
         Socket socket = null;
+        System.setProperty("javax.net.ssl.keyStore","/etc/letsencrypt/live/www.duedue.xyz/keystore.jks");
+        System.setProperty("javax.net.ssl.keyStorePassword","squirrel");
+        SSLServerSocketFactory ssf = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
         try {
-            serverSocket = new ServerSocket(PORT);
+            serverSocket = ssf.createServerSocket(PORT);
         } catch (IOException e){
             e.printStackTrace();
         }

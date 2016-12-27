@@ -1,6 +1,3 @@
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.StringBuilderWriter;
-
 import javax.sound.sampled.*;
 import java.io.*;
 import java.net.InetAddress;
@@ -40,17 +37,19 @@ public class SquirrelThread extends Thread {
 
     //parse the http request from the client
     public void request() throws IOException, UnsupportedAudioFileException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
         //start to read request
         String line;
         line = in.readLine();
         if(line!=null) {
+            System.out.println(line);
             if (line.startsWith("POST")) {
                 handle_post_request(in, line);
             } else if (line.startsWith("OPTION")) {
                 handle_option_request(in, line);
             } else {
                 //todo:tell the browser that the resource does not exist
+                System.out.print("cannot parse"+line);
             }
         } else {
             System.out.print("ERROR: LINE EMPTY");
@@ -92,6 +91,7 @@ public class SquirrelThread extends Thread {
             c = in.read();
             body.append((char) c);
         }
+        System.out.println("starting to convert...");
         String converted_str = convert_service(body.toString());
         InputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(converted_str));
         //convert the input to stream
