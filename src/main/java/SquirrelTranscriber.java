@@ -24,7 +24,6 @@ public class SquirrelTranscriber {
                 .setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
         configuration
                 .setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
-        configuration.setSampleRate(8000);
         StreamSpeechRecognizer recognizer = new StreamSpeechRecognizer(
                 configuration);
         System.out.println("starting...");
