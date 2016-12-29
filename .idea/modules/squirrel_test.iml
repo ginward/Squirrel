@@ -12,7 +12,9 @@
     <orderEntry type="module" module-name="squirrel_main" />
     <orderEntry type="library" name="Gradle: edu.cmu.sphinx:sphinx4-core:5prealpha-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: edu.cmu.sphinx:sphinx4-data:5prealpha-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.directory.studio:org.apache.commons.io:2.4" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.commons:commons-math3:3.2" level="project" />
+    <orderEntry type="library" name="Gradle: commons-io:commons-io:2.4" level="project" />
   </component>
   <component name="TestModuleProperties" production-module="squirrel_main" />
 </module>

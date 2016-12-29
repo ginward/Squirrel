@@ -1,7 +1,10 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="squirrel:jar">
+  <artifact type="jar" build-on-make="true" name="squirrel:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/squirrel_jar</output-path>
     <root id="archive" name="squirrel.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+      </element>
       <element id="module-output" name="squirrel_main" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/commons-io/commons-io/2.4/b1b6ea3b7e4aa4f492509a4952029cd8e48019ad/commons-io-2.4.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/edu.cmu.sphinx/sphinx4-data/5prealpha-SNAPSHOT/f8da42e56729cab8bdb373cc4590b85bfa374c51/sphinx4-data-5prealpha-SNAPSHOT.jar" path-in-jar="/" />
