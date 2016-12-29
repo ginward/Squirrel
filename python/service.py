@@ -32,6 +32,7 @@ import socket
 import thread
 import base64
 import StringIO
+import time
 
 CONST_PORT = 8081
 CONST_HOST = 'localhost'
@@ -97,3 +98,4 @@ while True:
 	c, addr = s.accept() 
 	print 'Got connections from', addr
 	thread.start_new_thread(on_new_client,(c,))
+	time.sleep(0.02) #slow the CPU usage down
