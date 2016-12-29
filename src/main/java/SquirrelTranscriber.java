@@ -15,9 +15,7 @@ public class SquirrelTranscriber {
      * Function to transcribe audio into text
      * */
     public String transcribe(InputStream stream) throws IOException {
-
         Configuration configuration = new Configuration();
-
         configuration
                 .setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
         configuration

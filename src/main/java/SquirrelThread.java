@@ -94,7 +94,7 @@ public class SquirrelThread extends Thread {
         System.out.println("starting to convert...");
         String converted_str = convert_service(body.toString());
         InputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(converted_str));
-        //convert the input to stream
+
         SquirrelTranscriber transcriber = new SquirrelTranscriber();
         String text = transcriber.transcribe(inputStream);
         response(text);
