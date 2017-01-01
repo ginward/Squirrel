@@ -17,11 +17,11 @@ public class SquirrelTranscriber {
     public String transcribe(InputStream stream) throws IOException {
         Configuration configuration = new Configuration();
         configuration
-                .setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
+                .setAcousticModelPath("file:src/main/java/cmusphinx-en-us-5.2");
         configuration
                 .setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
         configuration
-                .setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
+                .setLanguageModelPath("file:src/main/java/en-70k-0.2.lm.bin");
         StreamSpeechRecognizer recognizer = new StreamSpeechRecognizer(
                 configuration);
         System.out.println("starting...");
